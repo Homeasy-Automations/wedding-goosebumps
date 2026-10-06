@@ -1,0 +1,229 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  password      String?
+  role          String    @default("Viewer") // Super Admin, Editor, Marketing, Viewer
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  accounts      Account[]
+  sessions      Session[]
+  logs          ActivityLog[]
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@id([identifier, token])
+}
+
+model Page {
+  id               String    @id @default(cuid())
+  title            String
+  slug             String    @unique
+  status           String    @default("Draft") // Draft, Scheduled, Published
+  publishDate      DateTime?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  
+  // SEO
+  metaTitle        String?
+  metaKeywords     String?
+  metaDescription  String?
+  canonicalUrl     String?
+  ogTitle          String?
+  ogDescription    String?
+  ogImage          String?
+  structuredData   String? // JSON string
+  robots           String? // index, follow
+  
+  sections         Section[]
+}
+
+model Section {
+  id           String   @id @default(cuid())
+  pageId       String
+  type         String   // e.g. "HeroVideo", "GallerySection"
+  order        Int
+  isHidden     Boolean  @default(false)
+  data         String   // JSON string of properties
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  page         Page     @relation(fields: [pageId], references: [id], onDelete: Cascade)
+}
+
+model BlogPost {
+  id              String    @id @default(cuid())
+  title           String
+  slug            String    @unique
+  authorId        String?
+  coverImage      String?
+  excerpt         String?   @db.Text        // Increased to TEXT
+  body            String?   @db.LongText    // Increased to LONGTEXT for large blog content
+  status          String    @default("Draft") // Draft, Scheduled, Published
+  publishDate     DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  // SEO
+  metaTitle       String?
+  metaKeywords    String?   @db.Text
+  metaDescription String?   @db.Text
+  canonicalUrl    String?
+  ogTitle         String?
+  ogDescription   String?   @db.Text
+  ogImage         String?
+  structuredData  String?   @db.LongText    // For large JSON-LD blocks
+  robots          String?
+
+  categories      PostCategory[]
+  tags            PostTag[]
+  sections BlogSection[]
+}
+
+model BlogSection {
+  id         String   @id @default(cuid())
+  blogId     String
+  section    String
+  content    Json
+  sortOrder  Int      @default(0)
+
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  blog       BlogPost @relation(fields: [blogId], references: [id], onDelete: Cascade)
+
+  @@index([blogId])
+  @@index([section])
+}
+
+model Category {
+  id          String         @id @default(cuid())
+  name        String         @unique
+  slug        String         @unique
+  posts       PostCategory[]
+}
+
+model PostCategory {
+  postId     String
+  categoryId String
+  post       BlogPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  
+  @@id([postId, categoryId])
+}
+
+model Tag {
+  id          String    @id @default(cuid())
+  name        String    @unique
+  slug        String    @unique
+  posts       PostTag[]
+}
+
+model PostTag {
+  postId String
+  tagId  String
+  post   BlogPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  tag    Tag      @relation(fields: [tagId], references: [id], onDelete: Cascade)
+  
+  @@id([postId, tagId])
+}
+
+model ActivityLog {
+  id          String   @id @default(cuid())
+  userId      String?
+  action      String
+  module      String
+  details     String?  // JSON string
+  createdAt   DateTime @default(now())
+  
+  user        User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+}
+
+model Lead {
+  id          String   @id @default(cuid())
+  name        String
+  email       String
+  phone       String?
+  message     String?
+  sourcePage  String?
+  utmSource   String?
+  utmMedium   String?
+  utmCampaign String?
+  status      String   @default("New") // New, Contacted, Qualified, Closed, Spam
+  assignedTo  String?
+  notes       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model GlobalSettings {
+  id                 String   @id @default("global")
+  defaultMetaTitle   String?
+  defaultMetaKeywords   String?
+  defaultMetaDesc    String?
+  defaultOgImage     String?
+  gaId               String?
+  gtmId              String?
+  metaPixelId        String?
+  linkedinInsightTag String?
+  robotsTxt          String?
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+}
+
+model Redirect {
+  id          String   @id @default(cuid())
+  source      String   @unique
+  destination String
+  permanent   Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}

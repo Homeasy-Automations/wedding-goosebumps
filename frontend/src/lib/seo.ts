@@ -1,0 +1,49 @@
+import { Metadata } from "next";
+import prisma from "@/lib/prisma";
+
+const DEFAULT_SEO = {
+  title: "Wedding Goosebumps | Best Wedding Ideas, Inspiration & Planning",
+  description: "Plan your dream wedding with Wedding Goosebumps. Discover breathtaking wedding ideas, decor inspiration, real stories, and expert tips to make your special day unforgettable.",
+  keywords: "wedding inspiration, dream wedding ideas, wedding planning tips, wedding decoration ideas, bridal inspiration, wedding themes, modern wedding trends, wedding photography ideas, wedding blog, best wedding guide",
+};
+
+export async function getPageMetadata(slug: string): Promise<Metadata> {
+  try {
+    const page = await prisma.page.findUnique({
+      where: { slug }
+    });
+
+    if (!page) {
+      return {
+        title: DEFAULT_SEO.title,
+        description: DEFAULT_SEO.description,
+        keywords: DEFAULT_SEO.keywords,
+      };
+    }
+
+    let finalTitle = page.metaTitle || page.title || DEFAULT_SEO.title;
+    const finalDescription = page.metaDescription || DEFAULT_SEO.description;
+    const finalKeywords = page.metaKeywords || DEFAULT_SEO.keywords;
+
+    return {
+      title: finalTitle,
+      keywords: finalKeywords,
+      description: finalDescription,
+      alternates: {
+        canonical: page.canonicalUrl || undefined,
+      },
+      robots: page.robots || "index, follow",
+      openGraph: {
+        title: page.ogTitle || finalTitle,
+        description: page.ogDescription || finalDescription,
+        images: page.ogImage ? [{ url: page.ogImage }] : [],
+      }
+    };
+  } catch (error) {
+    return {
+      title: DEFAULT_SEO.title,
+      description: DEFAULT_SEO.description,
+      keywords: DEFAULT_SEO.keywords,
+    };
+  }
+}

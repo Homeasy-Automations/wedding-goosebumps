@@ -1,0 +1,29 @@
+# build outputs & deps
+.next
+out
+dist
+node_modules
+
+# big media – we’ll serve these from storage/CDN instead
+public/**/videos/**
+public/**/raw/**
+public/**/hires/**
+
+# large binaries
+**/*.mp4
+**/*.mov
+**/*.mkv
+**/*.avi
+**/*.zip
+**/*.rar
+**/*.7z
+**/*.psd
+**/*.tif
+**/*.tiff
+**/*.jpg
+**/*.jpeg
+**/*.png
+**/*.webp
+**/*.avif
+**/*.gif
+**/*.svg

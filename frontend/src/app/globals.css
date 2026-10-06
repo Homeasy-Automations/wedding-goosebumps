@@ -1,0 +1,258 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap');
+@import "tailwindcss";
+@import "tw-animate-css";
+
+
+@theme {
+  --color-ivory: #F8F5F0;
+  --color-gold: #C2A770;
+  --color-charcoal: #1E1E1E;
+  --color-white: #FFFFFF;
+
+  --font-playfair-display: "Playfair Display", serif;
+  --font-lora: "Lora", serif;
+  --font-cormorant: "Cormorant Garamond", serif;  
+
+  --text-h1: 4.5rem;
+  --text-h2: 3.5rem;
+  --text-h3: 2.5rem;
+  --text-h4: 2rem;
+  --text-h5: 1.5rem;
+  --text-h6: 1.25rem;
+  --text-base: 1rem;
+  --text-sm: 0.875rem;
+  --text-xs: 0.75rem;
+
+  --font-weight-light: 300;
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  --radius-sm: 0.125rem;
+  --radius-md: 0.375rem;
+  --radius-lg: 0.5rem;
+  --radius-xl: 0.75rem;
+  --radius-full: 9999px;
+
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+}
+
+/* -------- keep your existing @imports and :root vars as-is -------- */
+
+/* --- Replace the h1..h6 block inside @layer base with this --- */
+@layer base {
+  html,
+  body {
+    background-color: var(--color-ivory);
+    color: var(--color-charcoal);
+    font-family: var(--font-lora);
+    font-size: var(--text-base);
+    line-height: 1.75;
+    scroll-behavior: smooth;
+    /* Permanently eliminate horizontal scroll; keep fallback then prefer clip */
+    overflow-x: hidden;
+    overflow-x: clip;
+    /* Stabilize layout when vertical scrollbar appears/disappears (only on end side) */
+    scrollbar-gutter: stable;
+    width: 100%;
+  }
+
+  /* HEADINGS: use Cormorant across the site */
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-cormorant);
+    color: var(--color-charcoal);
+    line-height: 1.2;
+    margin-bottom: 0.5em;
+    /* Use a weight that matches the hero look — 300 (Tailwind font-light) */
+    font-weight: 300;
+  }
+
+  h1 { font-size: var(--text-h1); }
+  h2 { font-size: var(--text-h2); }
+  h3 { font-size: var(--text-h3); }
+  h4 { font-size: var(--text-h4); }
+  h5 { font-size: var(--text-h5); }
+  h6 { font-size: var(--text-h6); }
+
+  p {
+    margin-bottom: 1em;
+    font-family: 'Inter', sans-serif;
+  }
+
+  /* ... rest of your base layer unchanged ... */
+}
+
+/* Utility: lock only vertical scrolling (used for mobile menu) */
+.scroll-lock {
+  overflow-y: hidden;
+  overscroll-behavior-y: contain;
+}
+
+/* Utility: Full-bleed container without subpixel gaps */
+.full-bleed {
+  position: relative;
+  left: 50%;
+  right: 50%;
+  width: 100vw;
+  margin-left: -50vw;
+  margin-right: -50vw;
+  overflow: clip;
+}
+@supports (width: 100svw) {
+  .full-bleed {
+    width: 100svw;
+    margin-left: -50svw;
+    margin-right: -50svw;
+  }
+}
+
+/* Remove the broken/duplicate Epicene @font-face entries or comment them out.
+   If you don't need Epicene, delete the following blocks to prevent 404s: */
+
+/* @font-face {
+  font-family: 'Epicene Display';
+  src: url('/fonts/EpiceneDisplay-Light.woff2') format('woff2');
+  font-weight: 300;
+  font-style: normal;
+} */
+
+/* @font-face {
+  font-family: 'Epicene Display Light';
+  src: url('/fonts/epicene-display-light.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+} */
+
+/* Keep a small helper class if you want to still use Epicene somewhere else,
+   but ensure the file exists and the path/casing is correct before enabling it. */
+
+/* .font-epicene-display {
+  font-family: 'Epicene Display', serif;
+  font-weight: 300;
+} */
+
+/* editor css*/
+.ProseMirror {
+    min-height: 500px;
+    padding: 20px;
+    outline: none;
+    font-size: 16px;
+    line-height: 1.8;
+}
+
+.ProseMirror h1 {
+    font-size: 40px;
+    font-weight: 700;
+    margin: 20px 0;
+}
+
+.ProseMirror h2 {
+    font-size: 32px;
+    font-weight: 700;
+    margin: 18px 0;
+}
+
+.ProseMirror h3 {
+    font-size: 26px;
+    font-weight: 600;
+    margin: 16px 0;
+}
+
+.ProseMirror p {
+    margin: 12px 0;
+}
+
+.ProseMirror ul {
+    list-style: disc;
+    padding-left: 30px;
+}
+
+.ProseMirror ol {
+    list-style: decimal;
+    padding-left: 30px;
+}
+
+.ProseMirror blockquote {
+    border-left: 4px solid #ddd;
+    padding-left: 20px;
+    color: #666;
+    margin: 20px 0;
+}
+
+.ProseMirror img {
+    max-width: 100%;
+    border-radius: 10px;
+    margin: 20px auto;
+    display: block;
+}
+
+.ProseMirror a {
+    color: #2563eb;
+    text-decoration: underline;
+}
+
+.ProseMirror {
+  min-height: 400px;
+  outline: none;
+}
+
+.ProseMirror h1 {
+  font-size: 2.25rem;
+  font-weight: bold;
+}
+
+.ProseMirror h2 {
+  font-size: 1.8rem;
+  font-weight: bold;
+}
+
+.ProseMirror p {
+  margin: 12px 0;
+}
+
+.ProseMirror ul {
+  list-style: disc;
+  padding-left: 24px;
+}
+
+.ProseMirror img {
+  max-width: 100%;
+  border-radius: 8px;
+}
+
+
+
+/* loader css*/
+@keyframes fade {
+
+  0%{
+    opacity:0;
+    transform:scale(.92);
+  }
+
+  15%{
+    opacity:1;
+    transform:scale(1);
+  }
+
+  85%{
+    opacity:1;
+    transform:scale(1);
+  }
+
+  100%{
+    opacity:0;
+    transform:scale(1.05);
+  }
+
+}
+
+.animate-fade{
+  animation:fade .9s linear;
+}
+
+/* END editor css*/
+
